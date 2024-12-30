@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2.5rem;
+            margin: 2rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: titleGlow 2s infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+            to { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073; }
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            width: 300px;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .score {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .match-status {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            color: #ffd700;
+        }
+
+        .hands {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 400px;
+            height: 200px;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .player-hand, .computer-hand {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+        }
+
+        .hand-label {
+            position: absolute;
+            top: -30px;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .playing .player-hand,
+        .playing .computer-hand {
+            animation: shakeHand 0.8s ease-in-out;
+        }
+
+        @keyframes shakeHand {
+            0% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-30px) rotate(-10deg); }
+            50% { transform: translateY(0px) rotate(0deg); }
+            75% { transform: translateY(-30px) rotate(10deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .options {
+            display: flex;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .option {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .option:hover {
+            transform: scale(1.1) translateY(-5px);
+            background: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .option:active {
+            transform: scale(0.95);
+        }
+
+        .result {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            min-height: 2rem;
+            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .win { background: rgba(0, 255, 0, 0.2); }
+        .lose { background: rgba(255, 0, 0, 0.2); }
+        .draw { background: rgba(255, 255, 255, 0.2); }
+
+        .controls {
+            margin: 1rem 0;
+        }
+
+        .reset-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            background: #ff4757;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #ff6b81;
+            transform: scale(1.05);
+        }
+
+        .choice-display {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 1.2rem;
+            min-height: 1.2rem;
+        }
+
+    </style>
+</head>
+<body>
+    <h1 class="game-title">Rock Paper Scissors</h1>
+    
+    <div class="score-board">
+        <div class="score">
+            <p>Player</p>
+            <p id="player-score">0</p>
+        </div>
+        <div class="score">
+            <p>Computer</p>
+            <p id="computer-score">0</p>
+        </div>
+    </div>
+
+    <div class="match-status" id="match-status">Best of 3 - Round 1</div>
+    <div class="result" id="result">Choose your move!</div>
+    <div class="choice-display" id="choice-display"></div>
+
+    <div class="hands">
+        <div class="player-hand">🤜
+            <div class="hand-label">You</div>
+        </div>
+        <div class="computer-hand">🤛
+            <div class="hand-label">Computer</div>
+        </div>
+    </div>
+
+    <div class="options">
+        <button class="option" data-choice="rock">🗿</button>
+        <button class="option" data-choice="paper">📄</button>
+        <button class="option" data-choice="scissors">✂️</button>
+    </div>
+
+    <div class="controls">
+        <button class="reset-btn" id="reset-btn">Reset Game</button>
+    </div>
+
+    <script>
+        const options = document.querySelectorAll('.option');
+        const playerHand = document.querySelector('.player-hand');
+        const computerHand = document.querySelector('.computer-hand');
+        const result = document.getElementById('result');
+        const playerScoreElem = document.getElementById('player-score');
+        const computerScoreElem = document.getElementById('computer-score');
+        const matchStatus = document.getElementById('match-status');
+        const resetBtn = document.getElementById('reset-btn');
+        const choiceDisplay = document.getElementById('choice-display');
+        
+        let playerScore = 0;
+        let computerScore = 0;
+        let currentRound = 1;
+        const maxRounds = 3;
+
+        const choices = ['rock', 'paper', 'scissors'];
+        const beats = {
+            rock: 'scissors',
+            paper: 'rock',
+            scissors: 'paper'
+        };
+
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                const playerChoice = this.dataset.choice;
+                const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+                const playerWins = beats[playerChoice] === computerChoice;
+
+                playerHand.textContent = this.textContent;
+                computerHand.textContent = choices.find(choice => choice === computerChoice);
+                choiceDisplay.textContent = `You chose ${playerChoice}, Computer chose ${computerChoice}`;
+
+                if (playerWins) {
+                    playerScore++;
+                    result.textContent = 'You win!';
+                    result.classList.add('win');
+                } else if (playerChoice === computerChoice) {
+                    result.textContent = 'It\'s a draw!';
+                    result.classList.add('draw');
+                } else {
+                    computerScore++;
+                    result.textContent = 'You lose!';
+                    result.classList.add('lose');
+                }
+
+                playerScoreElem.textContent = playerScore;
+                computerScoreElem.textContent = computerScore;
+
+                if (playerScore === maxRounds || computerScore === maxRounds) {
+                    if (playerScore > computerScore) {
+                        matchStatus.textContent = 'You win the match!';
+                    } else {
+                        matchStatus.textContent = 'You lose the match!';
+                    }
+                    playerScore = 0;
+                    computerScore = 0;
+                    currentRound = 1;
+                    playerScoreElem.textContent = playerScore;
+                    computerScoreElem.textContent = computerScore;
+                    matchStatus.textContent = 'Best of 3 - Round 1';
+                } else {
+                    currentRound++;
+                    matchStatus.textContent = `Best of 3 - Round ${currentRound}`;
+                }
+            });
+        });
+        </script>
+

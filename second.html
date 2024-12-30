@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2.5rem;
+            margin: 2rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            width: 300px;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .score {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .hands {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 400px;
+            height: 200px;
+            margin: 2rem 0;
+        }
+
+        .player-hand, .computer-hand {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .playing .player-hand,
+        .playing .computer-hand {
+            animation: shakeHand 0.8s ease-in-out;
+        }
+
+        @keyframes shakeHand {
+            0% { transform: translateY(0px); }
+            25% { transform: translateY(-30px); }
+            50% { transform: translateY(0px); }
+            75% { transform: translateY(-30px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .options {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .option {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .option:hover {
+            transform: scale(1.1);
+            background: white;
+        }
+
+        .result {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            min-height: 2rem;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <h1 class="game-title">Rock Paper Scissors</h1>
+    
+    <div class="score-board">
+        <div class="score">
+            <p>Player</p>
+            <p id="player-score">0</p>
+        </div>
+        <div class="score">
+            <p>Computer</p>
+            <p id="computer-score">0</p>
+        </div>
+    </div>
+
+    <div class="result" id="result">Choose your move!</div>
+
+    <div class="hands">
+        <div class="player-hand">🤜</div>
+        <div class="computer-hand">🤛</div>
+    </div>
+
+    <div class="options">
+        <button class="option" data-choice="rock">🗿 Rock</button>
+        <button class="option" data-choice="paper">📄 Paper</button>
+        <button class="option" data-choice="scissors">✂️ Scissors</button>
+    </div>
+
+    <script>
+        const options = document.querySelectorAll('.option');
+        const playerHand = document.querySelector('.player-hand');
+        const computerHand = document.querySelector('.computer-hand');
+        const result = document.getElementById('result');
+        const playerScoreElem = document.getElementById('player-score');
+        const computerScoreElem = document.getElementById('computer-score');
+        
+        let playerScore = 0;
+        let computerScore = 0;
+
+        const hands = {
+            rock: '🗿',
+            paper: '📄',
+            scissors: '✂️'
+        };
+
+        const getComputerChoice = () => {
+            const choices = ['rock', 'paper', 'scissors'];
+            const randomIndex = Math.floor(Math.random() * 3);
+            return choices[randomIndex];
+        };
+
+        const determineWinner = (playerChoice, computerChoice) => {
+            if (playerChoice === computerChoice) return 'Draw!';
+            
+            if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                playerScore++;
+                playerScoreElem.textContent = playerScore;
+                return 'You win! 🎉';
+            }
+
+            computerScore++;
+            computerScoreElem.textContent = computerScore;
+            return 'Computer wins! 🤖';
+        };
+
+        const playRound = (playerChoice) => {
+            playerHand.textContent = '🤜';
+            computerHand.textContent = '🤛';
+            
+            const hands = document.querySelector('.hands');
+            hands.classList.add('playing');
+
+            setTimeout(() => {
+                const computerChoice = getComputerChoice();
+                
+                playerHand.textContent = hands[playerChoice];
+                computerHand.textContent = hands[computerChoice];
+                
+                result.textContent = determineWinner(playerChoice, computerChoice);
+                hands.classList.remove('playing');
+            }, 800);
+        };
+
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                const playerChoice = this.dataset.choice;
+                playRound(playerChoice);
+            });
+        });
+    </script>
+</body>
+</html>
